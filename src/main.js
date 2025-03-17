@@ -106,7 +106,7 @@ async function createPrComment(markdown, updateCommentIfOneExists, commentIdenti
         core.info(`PR comment was updated.  ID: ${response.data.id}.`);
       })
       .catch(error => {
-        core.setFailed(`An error occurred trying to update the PR comment: ${error.message}`);
+        core.setFailed(`An error occurred trying to update the PR comment: ${error.message}. Status: {error.status}`);
       });
   } else {
     core.info(`Creating a new PR comment...`);
@@ -168,7 +168,7 @@ async function createStatusCheck(reportName, checkName, markdown, conclusion) {
       statusCheckId = response.data.id;
     })
     .catch(error => {
-      core.setFailed(`An error occurred trying to create the status check: ${error.message}`);
+      core.setFailed(`An error occurred trying to create the status check: ${error.message}. Status: {error.status}`);
     });
   return statusCheckId;
 }
