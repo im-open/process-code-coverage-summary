@@ -26,6 +26,10 @@ env:
   COVERAGE_SUMMARY_INPUT_FILE: './test/input-files/coverage-summary.md'
   TRUNCATE_SUMMARY_INPUT_FILE: './test/input-files/truncate.md'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build-and-review-pr:
     # This reusable workflow will check to see if an action's source code has changed based on
@@ -39,7 +43,7 @@ jobs:
     # This workflow assumes:
     #  - The main README.md is at the root of the repo
     #  - The README contains a contribution guidelines and usage examples section
-    uses: im-open/.github/.github/workflows/reusable-build-and-review-pr.yml@v1
+    uses: im-open/.github/.github/workflows/reusable-build-and-review-pr.yml@v2
     with:
       action-name: ${{ github.repository }}
       default-branch: main
@@ -82,7 +86,7 @@ jobs:
         run: echo ""
 
       - name: Setup - Checkout the action
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: '-------------------------------------------------------------------------------------------------------------'
         run: echo ""
@@ -493,7 +497,7 @@ jobs:
           fi
 
       - name: Setup - Checkout the action
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: '-------------------------------------------------------------------------------------------------------------'
         run: echo ""
@@ -529,12 +533,12 @@ jobs:
 
       - name: 10e - And the status check should match the inputs
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const assertStatusCheckExists = require('./test/assert-status-check-exists.js');
-            const assertStatusCheckMatchesExpectations = require('./test/assert-status-check-matches-expectations.js');
+            const assertStatusCheckExists = require('./test/assert-status-check-exists.cjs');
+            const assertStatusCheckMatchesExpectations = require('./test/assert-status-check-matches-expectations.cjs');
 
             const checkId = '${{ steps.no-failures.outputs.status-check-id }}';
             const actualCheck = await assertStatusCheckExists(github, context, core, checkId);
@@ -583,12 +587,12 @@ jobs:
 
       - name: 11e - And the status check should match the inputs
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const assertStatusCheckExists = require('./test/assert-status-check-exists.js');
-            const assertStatusCheckMatchesExpectations = require('./test/assert-status-check-matches-expectations.js');
+            const assertStatusCheckExists = require('./test/assert-status-check-exists.cjs');
+            const assertStatusCheckMatchesExpectations = require('./test/assert-status-check-matches-expectations.cjs');
 
             const checkId = '${{ steps.ignore-failures.outputs.status-check-id }}';
             const actualCheck = await assertStatusCheckExists(github, context, core, checkId);
@@ -637,12 +641,12 @@ jobs:
 
       - name: 12e - And the status check should match the inputs
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const assertStatusCheckExists = require('./test/assert-status-check-exists.js');
-            const assertStatusCheckMatchesExpectations = require('./test/assert-status-check-matches-expectations.js');
+            const assertStatusCheckExists = require('./test/assert-status-check-exists.cjs');
+            const assertStatusCheckMatchesExpectations = require('./test/assert-status-check-matches-expectations.cjs');
 
             const checkId = '${{ steps.allow-failures.outputs.status-check-id }}';
             const actualCheck = await assertStatusCheckExists(github, context, core, checkId);
@@ -691,12 +695,12 @@ jobs:
 
       - name: 13e - And the status check should match the inputs
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const assertStatusCheckExists = require('./test/assert-status-check-exists.js');
-            const assertStatusCheckMatchesExpectations = require('./test/assert-status-check-matches-expectations.js');
+            const assertStatusCheckExists = require('./test/assert-status-check-exists.cjs');
+            const assertStatusCheckMatchesExpectations = require('./test/assert-status-check-matches-expectations.cjs');
 
             const checkId = '${{ steps.threshold-0.outputs.status-check-id }}';
             const actualCheck = await assertStatusCheckExists(github, context, core, checkId);
@@ -718,11 +722,11 @@ jobs:
 
       - name: Teardown - Modify failing Status Check conclusion
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const updateFailingStatusCheck = require('./test/update-failing-status-check.js');
+            const updateFailingStatusCheck = require('./test/update-failing-status-check.cjs');
 
             await updateFailingStatusCheck(github, context, core, '${{ steps.allow-failures.outputs.status-check-id }}');
 
@@ -760,19 +764,19 @@ jobs:
           fi
 
       - name: Setup - Checkout the action
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup - Delete pre-existing process-code-coverage-summary PR Comments
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
-            const deletePrComments = require('./test/delete-pre-existing-comments.js');
+            const deletePrComments = require('./test/delete-pre-existing-comments.cjs');
             await deletePrComments(github, context, core);
 
       - name: Setup - Create a process-code-coverage-summary comment that can be updated
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             await github.rest.issues.createComment({
@@ -825,12 +829,12 @@ jobs:
 
       - name: 14e - And the pr-comment should match the match the expected values
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const assertCommentExists = require('./test/assert-pr-comment-exists.js');
-            const assertCommentMatchesExpectations = require('./test/assert-pr-comment-matches-expectations.js');
+            const assertCommentExists = require('./test/assert-pr-comment-exists.cjs');
+            const assertCommentMatchesExpectations = require('./test/assert-pr-comment-matches-expectations.cjs');
 
             const commentId = '${{ steps.update-with-matching-prefix.outputs.pr-comment-id }}';
             const actualComment = await assertCommentExists(github, context, core, commentId);
@@ -881,12 +885,12 @@ jobs:
 
       - name: 15e - And the pr-comment should match the expected values
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const assertCommentExists = require('./test/assert-pr-comment-exists.js');
-            const assertCommentMatchesExpectations = require('./test/assert-pr-comment-matches-expectations.js');
+            const assertCommentExists = require('./test/assert-pr-comment-exists.cjs');
+            const assertCommentMatchesExpectations = require('./test/assert-pr-comment-matches-expectations.cjs');
 
             const commentId = '${{ steps.update-without-matching-prefix.outputs.pr-comment-id }}';
             const actualComment = await assertCommentExists(github, context, core, commentId);
@@ -937,12 +941,12 @@ jobs:
 
       - name: 16e - And the pr-comment should match the expected values
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const assertCommentExists = require('./test/assert-pr-comment-exists.js');
-            const assertCommentMatchesExpectations = require('./test/assert-pr-comment-matches-expectations.js');
+            const assertCommentExists = require('./test/assert-pr-comment-exists.cjs');
+            const assertCommentMatchesExpectations = require('./test/assert-pr-comment-matches-expectations.cjs');
 
             const commentId = '${{ steps.matching-prefix-no-update.outputs.pr-comment-id }}';
             const actualComment = await assertCommentExists(github, context, core, commentId);
@@ -993,12 +997,12 @@ jobs:
 
       - name: 17e - And the pr-comment should match the expected values
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const assertCommentExists = require('./test/assert-pr-comment-exists.js');
-            const assertCommentMatchesExpectations = require('./test/assert-pr-comment-matches-expectations.js');
+            const assertCommentExists = require('./test/assert-pr-comment-exists.cjs');
+            const assertCommentMatchesExpectations = require('./test/assert-pr-comment-matches-expectations.cjs');
 
             const commentId = '${{ steps.truncate.outputs.pr-comment-id }}';
             const actualComment = await assertCommentExists(github, context, core, commentId);
@@ -1024,11 +1028,11 @@ jobs:
 
       - name: Teardown - Delete PR Comments
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const deletePrComment = require('./test/delete-pr-comment.js');
+            const deletePrComment = require('./test/delete-pr-comment.cjs');
 
             await deletePrComment(github, context, core, '${{ env.EXISTING_COMMENT_ID }}');
             await deletePrComment(github, context, core, '${{ steps.matching-prefix-no-update.outputs.pr-comment-id }}');
